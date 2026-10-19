@@ -3,7 +3,7 @@
 # TROQUE "projeto-final" pelo nome do projeto do grupo (minúsculo, com hífen).
 name: projeto-final
 
-# Define os serviços que serão executados pelo Docker Compose.
+# Define os serviços que serão executados pelo Docker Compose. Teste
 services:
   # Declara o serviço do banco de dados da aplicação.
   postgres:
