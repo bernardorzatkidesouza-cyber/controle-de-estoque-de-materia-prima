@@ -1,5 +1,5 @@
 # {{Nome do Projeto}}
-
+daniel
 > **Este é o ponto de partida do projeto do grupo.** Apague este bloco antes de entregar.
 >
 > **Objetivo do exercício:** planejar e organizar um backend antes de programar tudo. O grupo cria o problema e as regras de negócio, desenha o sistema, monta a estrutura de todas as entidades, faz a API funcionar com as regras implementadas e documenta tudo neste README. O enunciado completo está em `Aula 10-11/README.md`, no repositório da disciplina.
