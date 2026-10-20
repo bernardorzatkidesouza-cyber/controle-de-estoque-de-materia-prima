@@ -1,9 +1,5 @@
-# {{Nome do Projeto}}
-daniel
-> **Este é o ponto de partida do projeto do grupo.** Apague este bloco antes de entregar.
->
-> **Objetivo do exercício:** planejar e organizar um backend antes de programar tudo. O grupo cria o problema e as regras de negócio, desenha o sistema, monta a estrutura de todas as entidades, faz a API funcionar com as regras implementadas e documenta tudo neste README. O enunciado completo está em `Aula 10-11/README.md`, no repositório da disciplina.
->
+# {{Controle de Estoque e Matéria-Prima}}
+
 > **O que fazer, na ordem:**
 >
 > 1. Copie esta pasta inteira para fora do repositório da disciplina, com o nome do projeto, e publique no GitHub. Os comandos estão no enunciado (seção "Como começar pelo template").
@@ -39,37 +35,38 @@ Projeto Final da disciplina de Backend (Engenharia de Software, SATC). **Etapa 1
 
 | Nome | GitHub |
 |---|---|
-| {{Nome completo}} | [@{{usuario}}](https://github.com/{{usuario}}) |
-| {{Nome completo}} | [@{{usuario}}](https://github.com/{{usuario}}) |
-| {{Nome completo}} | [@{{usuario}}](https://github.com/{{usuario}}) |
+| {{Bernardo Rzatki da Silva de Souza}} | [@{{bernardorzatkidesouza-cyber }}](https://github.com/bernardorzatkidesouza-cyber) |
+| {{Miguel Machado Gomes }} | [@{{gomesisworking}}](https://github.com/gomesisworking) |
+| {{Jenifer da Silva Vieira}} | [@{{JeniferSilvaVieira}}](https://github.com/JeniferSilvaVieira) |
 
 ## O problema
 
-**Tema sorteado:** {{tema}}
+**Tema sorteado:** {{industria e manofatura}}
 
-{{Em 3 a 5 linhas: o problema que o grupo criou dentro do tema, quem sofre com ele hoje e o que o sistema muda.}}
+{{Muitas indústrias enfrentam dificuldades para controlar o estoque de matéria-prima, causando falta de materiais durante a produção ou acúmulo desnecessário de produtos. A ausência de um controle adequado dificulta o acompanhamento das entradas e saídas dos materiais. Dessa forma, uma API de controle de estoque permitirá registrar movimentações, consultar quantidades disponíveis e identificar quando os materiais estiverem abaixo do estoque mínimo.}}
 
 **Quem usa o sistema:**
 
 | Quem | O que faz no sistema |
-|---|---|
-| Bibliotecário *(exemplo)* | Cadastra livros e leitores, registra empréstimos e devoluções |
-| ... | ... |
+|Administrador| Cadastra e atualiza as matérias-primas e os fornecedores. |
+| Funcionário do estoque | Registra as entradas e saídas de matérias-primas. |
+| Gerente de produção | Consulta a quantidade disponível e verifica materiais abaixo do estoque mínimo. |
 
 **Regras de negócio.** No mínimo 3, criadas pelo grupo a partir do problema: o que o sistema precisa garantir ou impedir. Precisam atender à necessidade do tema e estar implementadas no código. O que só confere formato (campo obrigatório, número positivo) é validação do DTO, não regra de negócio.
 
 | # | Regra | Onde está no código | Rota que usa |
 |---|---|---|---|
-| R1 *(exemplo)* | Um leitor não pode ter mais de 3 empréstimos em aberto | `EmprestimoService` | `POST /emprestimos` |
-| R2 | ... | ... | ... |
-| R3 | ... | ... | ... |
+| RN01 – Controle de saída | O sistema não permite retirar uma quantidade de matéria-prima maior do que a disponível no estoque. | MovimentacaoService.java |POST /movimentacoes |
+
+| RN02 – O sistema identifica e informa quando a quantidade de uma matéria-prima fica abaixo do estoque mínimo definido. | MaterialRepository.java | GET /materiais/estoque-baixo | 
+
+| RN03 – Toda entrada ou saída de matéria-prima deve ser registrada no sistema, atualizando a quantidade disponível no estoque | MovimentacaoService.java | POST /movimentacoes | 
 
 **Fora do escopo:** {{o que o grupo decidiu não fazer, para o projeto caber no semestre}}
-
+|até então o projeto foi pensado sobre as limitações pasadas pelo instrutor/professor Daniel|
 ## Tecnologias
 
 | O quê | Qual |
-|---|---|
 | Linguagem | Java 25 |
 | Framework | Spring Boot 3.5 (Web, Validation, Data JPA) |
 | Banco de dados | PostgreSQL 16, em Docker |

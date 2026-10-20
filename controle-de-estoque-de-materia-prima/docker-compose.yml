@@ -1,7 +1,7 @@
 # Nome do projeto Compose. Sem ele, o Docker usa o nome da pasta e dois projetos
 # com a mesma pasta acabariam dividindo o mesmo volume de dados.
 # TROQUE "projeto-final" pelo nome do projeto do grupo (minúsculo, com hífen).
-name: projeto-final
+name: controle-de-estoque-de-materia-prima
 
 # Define os serviços que serão executados pelo Docker Compose. Teste
 services:
@@ -10,7 +10,7 @@ services:
     # Usa uma imagem leve do PostgreSQL 16, a mesma das Aulas 08 e 09.
     image: postgres:16-alpine
     # Define um nome fixo para localizar o container facilmente.
-    container_name: projeto-final-postgres
+    container_name: controle-de-estoque-de-materia-prima-postgres
     # Define as variáveis que o PostgreSQL lê na primeira inicialização.
     environment:
       # Cria o banco lógico usado pela aplicação.
