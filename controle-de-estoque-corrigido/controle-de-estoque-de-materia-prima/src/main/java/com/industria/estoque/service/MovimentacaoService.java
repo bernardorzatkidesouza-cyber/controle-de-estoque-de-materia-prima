@@ -36,6 +36,7 @@ public class MovimentacaoService {
         // Validação da quantidade
         if (quantidade == null ||
                 quantidade.compareTo(BigDecimal.ZERO) <= 0) {
+<<<<<<< HEAD:controle-de-estoque-corrigido/controle-de-estoque-de-materia-prima/src/main/java/com/industria/estoque/service/MovimentacaoService.java
             throw new RegraDeNegocioException(
                     "A quantidade deve ser maior que zero.");
         }
@@ -52,6 +53,19 @@ public class MovimentacaoService {
 
         if (tipo == null) {
             throw new RegraDeNegocioException(
+=======
+            throw new IllegalArgumentException(
+                    "A quantidade deve ser maior que zero.");
+        }
+
+        Material material = materialRepository.findById(materialId)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Material não encontrado."));
+
+        if (tipo == null) {
+            throw new IllegalArgumentException(
+>>>>>>> main:controle-de-estoque-de-materia-prima/src/main/java/api/service/MovimentacaoService.java
                     "Informe o tipo da movimentação.");
         }
 
@@ -61,10 +75,15 @@ public class MovimentacaoService {
         if (tipo.equals("saida")) {
 
             if (quantidade.compareTo(material.getQuantidade()) > 0) {
+<<<<<<< HEAD:controle-de-estoque-corrigido/controle-de-estoque-de-materia-prima/src/main/java/com/industria/estoque/service/MovimentacaoService.java
                 throw new RegraDeNegocioException(
                         "RN01: estoque insuficiente. Disponível: "
                                 + material.getQuantidade()
                                 + ", solicitado: " + quantidade);
+=======
+                throw new IllegalArgumentException(
+                        "Estoque insuficiente.");
+>>>>>>> main:controle-de-estoque-de-materia-prima/src/main/java/api/service/MovimentacaoService.java
             }
 
             material.setQuantidade(
@@ -76,7 +95,11 @@ public class MovimentacaoService {
                     material.getQuantidade().add(quantidade));
 
         } else {
+<<<<<<< HEAD:controle-de-estoque-corrigido/controle-de-estoque-de-materia-prima/src/main/java/com/industria/estoque/service/MovimentacaoService.java
             throw new RegraDeNegocioException(
+=======
+            throw new IllegalArgumentException(
+>>>>>>> main:controle-de-estoque-de-materia-prima/src/main/java/api/service/MovimentacaoService.java
                     "Tipo deve ser entrada ou saida.");
         }
 
@@ -92,8 +115,13 @@ public class MovimentacaoService {
             Fornecedor fornecedor =
                     fornecedorRepository.findById(fornecedorId)
                             .orElseThrow(() ->
+<<<<<<< HEAD:controle-de-estoque-corrigido/controle-de-estoque-de-materia-prima/src/main/java/com/industria/estoque/service/MovimentacaoService.java
                                     new RecursoNaoEncontradoException(
                                             "Fornecedor não encontrado: " + fornecedorId));
+=======
+                                    new IllegalArgumentException(
+                                            "Fornecedor não encontrado."));
+>>>>>>> main:controle-de-estoque-de-materia-prima/src/main/java/api/service/MovimentacaoService.java
 
             movimentacao.setFornecedor(fornecedor);
         }
@@ -105,4 +133,8 @@ public class MovimentacaoService {
     public List<Material> consultarEstoqueBaixo() {
         return materialRepository.buscarEstoqueBaixo();
     }
-}
+<<<<<<< HEAD:controle-de-estoque-corrigido/controle-de-estoque-de-materia-prima/src/main/java/com/industria/estoque/service/MovimentacaoService.java
+}
+=======
+}
+>>>>>>> main:controle-de-estoque-de-materia-prima/src/main/java/api/service/MovimentacaoService.java
