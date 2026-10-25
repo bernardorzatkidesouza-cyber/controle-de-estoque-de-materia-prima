@@ -1,14 +1,14 @@
 package com.industria.estoque.controller;
 
+import com.industria.estoque.dto.MaterialEntradaDTO;
+import com.industria.estoque.dto.MaterialRespostaDTO;
 import com.industria.estoque.model.Material;
 import com.industria.estoque.repository.MaterialRepository;
-<<<<<<< HEAD:controle-de-estoque-corrigido/controle-de-estoque-de-materia-prima/src/main/java/com/industria/estoque/controller/MaterialController.java
 import com.industria.estoque.service.RecursoNaoEncontradoException;
-import com.industria.estoque.service.RegraDeNegocioException;
-=======
->>>>>>> main:controle-de-estoque-de-materia-prima/src/main/java/api/controller/MaterialController.java
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -21,80 +21,59 @@ public class MaterialController {
         this.repository = repository;
     }
 
+    private MaterialRespostaDTO paraDTO(Material material) {
+        return new MaterialRespostaDTO(
+            material.getId(),
+            material.getNome(),
+            material.getQuantidade(),
+            material.getEstoqueMinimo()
+        );
+    }
+
     @PostMapping
-    public Material cadastrar(@RequestBody Material material) {
-        if (material.getNome() == null ||
-                material.getNome().isBlank()) {
-<<<<<<< HEAD:controle-de-estoque-corrigido/controle-de-estoque-de-materia-prima/src/main/java/com/industria/estoque/controller/MaterialController.java
-            throw new RegraDeNegocioException(
-=======
-            throw new IllegalArgumentException(
->>>>>>> main:controle-de-estoque-de-materia-prima/src/main/java/api/controller/MaterialController.java
-                    "O nome do material é obrigatório.");
-        }
+    public MaterialRespostaDTO cadastrar(
+            @Valid @RequestBody MaterialEntradaDTO dados) {
 
-        if (material.getQuantidade() == null ||
-                material.getQuantidade().signum() < 0 ||
-                material.getEstoqueMinimo() == null ||
-                material.getEstoqueMinimo().signum() < 0) {
-<<<<<<< HEAD:controle-de-estoque-corrigido/controle-de-estoque-de-materia-prima/src/main/java/com/industria/estoque/controller/MaterialController.java
-            throw new RegraDeNegocioException(
-=======
-            throw new IllegalArgumentException(
->>>>>>> main:controle-de-estoque-de-materia-prima/src/main/java/api/controller/MaterialController.java
-                    "As quantidades não podem ser negativas.");
-        }
+        Material material = new Material();
+        material.setNome(dados.nome());
+        material.setQuantidade(dados.quantidade());
+        material.setEstoqueMinimo(dados.estoqueMinimo());
 
-        return repository.save(material);
+        return paraDTO(repository.save(material));
     }
 
     @GetMapping
-    public List<Material> listar() {
-        return repository.findAll();
+    public List<MaterialRespostaDTO> listar() {
+        return repository.findAll()
+            .stream()
+            .map(this::paraDTO)
+            .toList();
     }
 
     @GetMapping("/estoque-baixo")
-    public List<Material> estoqueBaixo() {
-        return repository.buscarEstoqueBaixo();
+    public List<MaterialRespostaDTO> estoqueBaixo() {
+        return repository.buscarEstoqueBaixo()
+            .stream()
+            .map(this::paraDTO)
+            .toList();
     }
 
     @PutMapping("/{id}")
-    public Material atualizar(
+    public MaterialRespostaDTO atualizar(
             @PathVariable Long id,
-            @RequestBody Material dados) {
+            @Valid @RequestBody MaterialEntradaDTO dados) {
 
         Material material = repository.findById(id)
-                .orElseThrow(() ->
-<<<<<<< HEAD:controle-de-estoque-corrigido/controle-de-estoque-de-materia-prima/src/main/java/com/industria/estoque/controller/MaterialController.java
-                        new RecursoNaoEncontradoException(
-                                "Material não encontrado: " + id));
-=======
-                        new IllegalArgumentException(
-                                "Material não encontrado."));
->>>>>>> main:controle-de-estoque-de-materia-prima/src/main/java/api/controller/MaterialController.java
+            .orElseThrow(() ->
+                new RecursoNaoEncontradoException(
+                    "Material não encontrado: " + id
+                )
+            );
 
-        if (dados.getNome() == null ||
-                dados.getNome().isBlank() ||
-                dados.getQuantidade() == null ||
-                dados.getQuantidade().signum() < 0 ||
-                dados.getEstoqueMinimo() == null ||
-                dados.getEstoqueMinimo().signum() < 0) {
-<<<<<<< HEAD:controle-de-estoque-corrigido/controle-de-estoque-de-materia-prima/src/main/java/com/industria/estoque/controller/MaterialController.java
-            throw new RegraDeNegocioException(
-=======
-            throw new IllegalArgumentException(
->>>>>>> main:controle-de-estoque-de-materia-prima/src/main/java/api/controller/MaterialController.java
-                    "Informe dados válidos.");
-        }
+        material.setNome(dados.nome());
+        material.setQuantidade(dados.quantidade());
+        material.setEstoqueMinimo(dados.estoqueMinimo());
 
-        material.setNome(dados.getNome());
-        material.setQuantidade(dados.getQuantidade());
-        material.setEstoqueMinimo(dados.getEstoqueMinimo());
-
-        return repository.save(material);
+        return paraDTO(repository.save(material));
     }
-<<<<<<< HEAD:controle-de-estoque-corrigido/controle-de-estoque-de-materia-prima/src/main/java/com/industria/estoque/controller/MaterialController.java
 }
-=======
-}
->>>>>>> main:controle-de-estoque-de-materia-prima/src/main/java/api/controller/MaterialController.java

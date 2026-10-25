@@ -1,13 +1,13 @@
 package com.industria.estoque.controller;
 
+import com.industria.estoque.dto.FornecedorEntradaDTO;
+import com.industria.estoque.dto.FornecedorRespostaDTO;
 import com.industria.estoque.model.Fornecedor;
 import com.industria.estoque.repository.FornecedorRepository;
-<<<<<<< HEAD:controle-de-estoque-corrigido/controle-de-estoque-de-materia-prima/src/main/java/com/industria/estoque/controller/FornecedorController.java
-import com.industria.estoque.service.RegraDeNegocioException;
-=======
->>>>>>> main:controle-de-estoque-de-materia-prima/src/main/java/api/controller/FornecedorController.java
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -16,31 +16,37 @@ public class FornecedorController {
 
     private final FornecedorRepository repository;
 
-    public FornecedorController(FornecedorRepository repository) {
+    public FornecedorController(
+            FornecedorRepository repository) {
         this.repository = repository;
     }
 
-    @PostMapping
-    public Fornecedor cadastrar(@RequestBody Fornecedor fornecedor) {
-        if (fornecedor.getNome() == null ||
-                fornecedor.getNome().isBlank()) {
-<<<<<<< HEAD:controle-de-estoque-corrigido/controle-de-estoque-de-materia-prima/src/main/java/com/industria/estoque/controller/FornecedorController.java
-            throw new RegraDeNegocioException(
-=======
-            throw new IllegalArgumentException(
->>>>>>> main:controle-de-estoque-de-materia-prima/src/main/java/api/controller/FornecedorController.java
-                    "O nome do fornecedor é obrigatório.");
-        }
+    private FornecedorRespostaDTO paraDTO(
+            Fornecedor fornecedor) {
 
-        return repository.save(fornecedor);
+        return new FornecedorRespostaDTO(
+            fornecedor.getId(),
+            fornecedor.getNome(),
+            fornecedor.getContato()
+        );
+    }
+
+    @PostMapping
+    public FornecedorRespostaDTO cadastrar(
+            @Valid @RequestBody FornecedorEntradaDTO dados) {
+
+        Fornecedor fornecedor = new Fornecedor();
+        fornecedor.setNome(dados.nome());
+        fornecedor.setContato(dados.contato());
+
+        return paraDTO(repository.save(fornecedor));
     }
 
     @GetMapping
-    public List<Fornecedor> listar() {
-        return repository.findAll();
+    public List<FornecedorRespostaDTO> listar() {
+        return repository.findAll()
+            .stream()
+            .map(this::paraDTO)
+            .toList();
     }
-<<<<<<< HEAD:controle-de-estoque-corrigido/controle-de-estoque-de-materia-prima/src/main/java/com/industria/estoque/controller/FornecedorController.java
 }
-=======
-}
->>>>>>> main:controle-de-estoque-de-materia-prima/src/main/java/api/controller/FornecedorController.java
