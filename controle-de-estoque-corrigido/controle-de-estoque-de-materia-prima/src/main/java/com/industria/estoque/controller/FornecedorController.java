@@ -1,9 +1,9 @@
+
 package com.industria.estoque.controller;
 
 import com.industria.estoque.dto.FornecedorEntradaDTO;
 import com.industria.estoque.dto.FornecedorRespostaDTO;
-import com.industria.estoque.model.Fornecedor;
-import com.industria.estoque.repository.FornecedorRepository;
+import com.industria.estoque.service.FornecedorService;
 
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -14,39 +14,33 @@ import java.util.List;
 @RequestMapping("/fornecedores")
 public class FornecedorController {
 
-    private final FornecedorRepository repository;
+    private final FornecedorService service;
 
-    public FornecedorController(
-            FornecedorRepository repository) {
-        this.repository = repository;
-    }
-
-    private FornecedorRespostaDTO paraDTO(
-            Fornecedor fornecedor) {
-
-        return new FornecedorRespostaDTO(
-            fornecedor.getId(),
-            fornecedor.getNome(),
-            fornecedor.getContato()
-        );
+    public FornecedorController(FornecedorService service) {
+        this.service = service;
     }
 
     @PostMapping
     public FornecedorRespostaDTO cadastrar(
             @Valid @RequestBody FornecedorEntradaDTO dados) {
-
-        Fornecedor fornecedor = new Fornecedor();
-        fornecedor.setNome(dados.nome());
-        fornecedor.setContato(dados.contato());
-
-        return paraDTO(repository.save(fornecedor));
+        return service.cadastrar(dados);
     }
 
     @GetMapping
     public List<FornecedorRespostaDTO> listar() {
-        return repository.findAll()
-            .stream()
-            .map(this::paraDTO)
-            .toList();
+        return service.listar();
+    }
+
+    @GetMapping("/{id}")
+    public FornecedorRespostaDTO buscarPorId(
+            @PathVariable Long id) {
+        return service.buscarPorId(id);
+    }
+
+    @PutMapping("/{id}")
+    public FornecedorRespostaDTO atualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody FornecedorEntradaDTO dados) {
+        return service.atualizar(id, dados);
     }
 }
