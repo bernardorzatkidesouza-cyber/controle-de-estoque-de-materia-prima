@@ -1,13 +1,3 @@
-# repository: a conversa com o banco (Aula 08)
+# Repositories
 
-É a única camada que lê e grava no banco. Cada Repository é uma interface: quem escreve a implementação é o Spring.
-
-**Nesta etapa:** crie o Repository de todas as entidades. É uma linha só:
-
-```java
-public interface LivroRepository extends JpaRepository<Livro, Long> { }
-```
-
-Com isso a interface já tem `save`, `findById`, `findAll` e `deleteById`. Só o Service chama o Repository.
-
-**Para consultar:** `TarefaRepository` em `Aula 09/exemplo_tarefas_resolvido`.
+Os repositories utilizam Spring Data JPA para acessar o PostgreSQL. `MaterialRepository` inclui uma consulta para listar materiais cuja quantidade é menor que o estoque mínimo. Os demais repositories oferecem as operações padrão de persistência das respectivas entidades.

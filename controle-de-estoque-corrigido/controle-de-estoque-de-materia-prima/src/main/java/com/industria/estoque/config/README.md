@@ -1,5 +1,3 @@
-# config: configuração da aplicação (Aula 09)
+# Configuração
 
-Classes de configuração, que não pertencem a nenhuma entidade.
-
-**Nesta etapa:** só troque o título e a descrição em `OpenApiConfig`. É o que aparece no topo do Swagger UI.
+Contém configurações transversais da aplicação. `OpenApiConfig` configura os metadados apresentados pela documentação OpenAPI/Swagger.

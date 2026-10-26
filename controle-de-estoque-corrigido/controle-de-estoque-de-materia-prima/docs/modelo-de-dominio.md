@@ -1,85 +1,84 @@
 # Modelo de domínio
 
-> No mínimo **3 entidades** e pelo menos **um relacionamento**. As linhas marcadas com *(exemplo)* mostram o nível de detalhe esperado: apague e escreva as do grupo.
+O domínio da aplicação representa o controle de matérias-primas de uma indústria. Há três entidades persistidas: `Material`, `Fornecedor` e `Movimentacao`. Os atributos abaixo foram conferidos nas classes Java e na migration SQL do projeto.
 
 ## Entidades
 
-Uma tabela por entidade. A coluna **Regra** é o que vira `NOT NULL`, `UNIQUE` ou validação no DTO.
+### Material (`materiais`)
 
-### Livro *(exemplo)*
+Representa uma matéria-prima controlada pelo estoque.
 
-Um exemplar do acervo que pode ser emprestado.
-
-| Atributo | Tipo Java | Coluna | Obrigatório | Regra |
+| Atributo Java | Tipo Java | Coluna | Obrigatório | Regra / observação |
 |---|---|---|---|---|
-| `id` | `Long` | `id` | sim | Gerado pelo banco |
-| `titulo` | `String` | `titulo` | sim | Até 255 caracteres |
-| `isbn` | `String` | `isbn` | sim | Até 20 caracteres. Não é único: exemplares do mesmo título repetem o ISBN |
-| `disponivel` | `boolean` | `disponivel` | sim | Nasce `true`; o cliente não controla |
+| `id` | `Long` | `id` | Sim | Chave primária gerada pelo banco |
+| `nome` | `String` | `nome` | Sim | Nome do material; não pode ficar em branco na entrada da API |
+| `quantidade` | `BigDecimal` | `quantidade` | Sim | Saldo atual, precisão 10 e escala 2; não pode ser negativo |
+| `estoqueMinimo` | `BigDecimal` | `estoque_minimo` | Sim | Limite mínimo, precisão 10 e escala 2; não pode ser negativo |
 
-### {{Entidade 2}}
+### Fornecedor (`fornecedores`)
 
-{{O que ela representa, em uma linha.}}
+Representa uma empresa ou pessoa que fornece matéria-prima.
 
-| Atributo | Tipo Java | Coluna | Obrigatório | Regra |
+| Atributo Java | Tipo Java | Coluna | Obrigatório | Regra / observação |
 |---|---|---|---|---|
-| `id` | `Long` | `id` | sim | Gerado pelo banco |
-| ... | ... | ... | ... | ... |
+| `id` | `Long` | `id` | Sim | Chave primária gerada pelo banco |
+| `nome` | `String` | `nome` | Sim | Nome obrigatório na entrada da API |
+| `contato` | `String` | `contato` | Não | Informação de contato opcional |
 
-### {{Entidade 3}}
+### Movimentacao (`movimentacoes`)
 
-{{O que ela representa, em uma linha.}}
+Registra uma entrada ou saída de uma matéria-prima e a quantidade movimentada.
 
-| Atributo | Tipo Java | Coluna | Obrigatório | Regra |
+| Atributo Java | Tipo Java | Coluna | Obrigatório | Regra / observação |
 |---|---|---|---|---|
-| `id` | `Long` | `id` | sim | Gerado pelo banco |
-| ... | ... | ... | ... | ... |
+| `id` | `Long` | `id` | Sim | Chave primária gerada pelo banco |
+| `material` | `Material` | `material_id` | Sim | Referência obrigatória a um material existente |
+| `fornecedor` | `Fornecedor` | `fornecedor_id` | Não | Referência opcional a um fornecedor |
+| `tipo` | `String` | `tipo` | Sim | Deve ser `entrada` ou `saida` |
+| `quantidade` | `BigDecimal` | `quantidade` | Sim | Deve ser maior que zero; precisão 10 e escala 2 |
+| `data` | `LocalDateTime` | `data` | Sim | Data e hora do registro; padrão no banco e na entidade |
 
 ## Relacionamentos
 
-| De | Para | Tipo | No banco | No código |
-|---|---|---|---|---|
-| Emprestimo *(exemplo)* | Leitor | muitos para um | `emprestimos.leitor_id` referencia `leitores(id)` | `@ManyToOne` em `Emprestimo` |
-| Emprestimo *(exemplo)* | Livro | muitos para um | `emprestimos.livro_id` referencia `livros(id)` | `@ManyToOne` em `Emprestimo` |
-| ... | ... | ... | ... | ... |
+| De | Para | Cardinalidade | Implementação |
+|---|---|---|---|
+| `Movimentacao` | `Material` | Muitas movimentações para um material | `@ManyToOne(optional = false)`; `material_id` é chave estrangeira obrigatória |
+| `Movimentacao` | `Fornecedor` | Muitas movimentações podem referenciar um fornecedor; fornecedor pode ser nulo | `@ManyToOne`; `fornecedor_id` é chave estrangeira opcional |
 
 ## Diagrama ER
 
-O GitHub desenha o bloco abaixo sozinho. Troque pelas tabelas do grupo, com os nomes das colunas como estarão no banco (`snake_case`).
-
 ```mermaid
 erDiagram
-    LEITORES ||--o{ EMPRESTIMOS : "faz"
-    LIVROS ||--o{ EMPRESTIMOS : "aparece em"
+    MATERIAIS ||--o{ MOVIMENTACOES : recebe
+    FORNECEDORES o|--o{ MOVIMENTACOES : fornece
 
-    LEITORES {
+    MATERIAIS {
         bigint id PK
         varchar nome
-        varchar email
+        numeric quantidade
+        numeric estoque_minimo
     }
-    LIVROS {
+    FORNECEDORES {
         bigint id PK
-        varchar titulo
-        varchar isbn
-        boolean disponivel
+        varchar nome
+        varchar contato
     }
-    EMPRESTIMOS {
+    MOVIMENTACOES {
         bigint id PK
-        bigint leitor_id FK
-        bigint livro_id FK
-        date data_retirada
-        date data_devolucao
+        bigint material_id FK
+        bigint fornecedor_id FK
+        varchar tipo
+        numeric quantidade
+        timestamp data
     }
 ```
 
-Como ler: `||--o{` é "um para muitos". Um leitor faz zero ou vários empréstimos, e cada empréstimo é de exatamente um leitor.
+A relação entre materiais e movimentações é obrigatória: uma movimentação pertence a um material. O fornecedor é opcional em uma movimentação.
 
-## Migrations
+## Migration
 
-Todas existem em `src/main/resources/db/migration`, uma tabela por arquivo. A ordem importa: a tabela referenciada nasce antes da que referencia.
-
-| Versão | Arquivo | O que cria |
+| Versão | Arquivo | Conteúdo |
 |---|---|---|
-| V1 *(exemplo)* | `V1__criar_livros.sql` | Tabela `livros` |
-| V2 *(exemplo)* | `V2__criar_leitores.sql` | Tabela `leitores` |
-| V3 *(exemplo)* | `V3__criar_emprestimos.sql` | Tabela `emprestimos`, com as duas chaves estrangeiras |
+| V1 | `src/main/resources/db/migration/V1__criar_tabelas_estoque.sql` | Cria as tabelas `fornecedores`, `materiais` e `movimentacoes`, suas chaves primárias e estrangeiras e restrições de quantidade/tipo. |
+
+O Flyway aplica a migration na inicialização. O Hibernate está configurado para validar o esquema (`ddl-auto=validate`), não para criar as tabelas automaticamente.

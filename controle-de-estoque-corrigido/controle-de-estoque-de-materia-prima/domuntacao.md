@@ -1,201 +1,100 @@
-# Controle de Estoque de Matéria-Prima
+# Documentação do projeto — Controle de Estoque de Matéria-Prima
 
-API REST para controlar o estoque de matérias-primas utilizadas em indústrias, permitindo cadastrar materiais e fornecedores, registrar entradas e saídas, acompanhar quantidades disponíveis e identificar materiais abaixo do estoque mínimo.
+**Disciplina:** Backend — Engenharia de Software, SATC  
+**Tipo:** API REST para controle de matérias-primas industriais
 
-Projeto Final da disciplina de Backend — Engenharia de Software, SATC. **Etapa 1: arquitetura do backend.**
+## 1. Visão geral
 
-## Índice
+O projeto tem como objetivo apoiar o controle de estoque de matéria-prima em uma indústria. A API permite cadastrar materiais e fornecedores, registrar entradas e saídas, consultar saldos e identificar materiais abaixo do estoque mínimo.
 
-- [Integrantes](#integrantes)
-- [O problema](#o-problema)
-- [Tecnologias](#tecnologias)
-- [Arquitetura](#arquitetura)
-- [Entidades](#entidades)
-- [Rotas](#rotas)
-- [Como executar](#como-executar)
-- [Situação do projeto](#situação-do-projeto)
-- [Documentação](#documentação)
+## 2. Problema e público-alvo
 
-## Integrantes
+A falta de controle das entradas e saídas pode causar falta de insumos durante a produção ou compras desnecessárias. O sistema atende principalmente funcionários do estoque, responsáveis pelo cadastro e movimentação, e gestores que precisam consultar os saldos.
+
+## 3. Tecnologias
+
+- **Java e Spring Boot:** implementação da aplicação e dos endpoints REST.
+- **Spring Web:** recebimento e resposta de requisições HTTP.
+- **Spring Data JPA/Hibernate:** persistência das entidades.
+- **PostgreSQL:** armazenamento relacional.
+- **Flyway:** versionamento da estrutura do banco.
+- **Bean Validation:** validação dos dados de entrada.
+- **Springdoc OpenAPI/Swagger UI:** documentação interativa dos endpoints.
+- **Maven Wrapper:** execução e gerenciamento das dependências do projeto.
+
+## 4. Arquitetura
+
+O código é organizado em camadas para separar responsabilidades:
+
+| Camada | Responsabilidade |
+|---|---|
+| `controller` | Define as rotas HTTP e recebe os DTOs. |
+| `service` | Executa as regras de negócio e coordena as operações. |
+| `repository` | Consulta e persiste dados com Spring Data JPA. |
+| `model` | Representa as entidades persistidas. |
+| `dto` | Define os dados aceitos e devolvidos pela API. |
+| `mapper` | Converte DTOs em entidades e vice-versa. |
+| `config` | Contém configurações, incluindo OpenAPI. |
+
+## 5. Entidades e relacionamentos
+
+- **Material:** nome, quantidade atual e estoque mínimo.
+- **Fornecedor:** nome e contato opcional.
+- **Movimentacao:** material associado, fornecedor opcional, tipo, quantidade e data/hora.
+- Um material pode ter várias movimentações; cada movimentação deve referenciar um material.
+- Um fornecedor pode estar associado a várias movimentações, mas o vínculo é opcional.
+
+O diagrama e os atributos detalhados estão em [`docs/modelo-de-dominio.md`](docs/modelo-de-dominio.md).
+
+## 6. Regras de negócio
+
+1. A quantidade da movimentação deve ser maior que zero.
+2. O tipo deve ser `entrada` ou `saida`.
+3. Uma entrada soma a quantidade ao estoque do material.
+4. Uma saída subtrai a quantidade, desde que não ultrapasse o saldo disponível.
+5. O material precisa existir; o fornecedor, quando informado, também precisa existir.
+6. A consulta de estoque baixo retorna materiais com quantidade menor que o estoque mínimo.
+
+## 7. Endpoints
+
+| Método | Rota | Descrição |
+|---|---|---|
+| POST | `/materiais` | Cadastrar material |
+| GET | `/materiais` | Listar materiais |
+| GET | `/materiais/{id}` | Consultar material |
+| PUT | `/materiais/{id}` | Atualizar material |
+| GET | `/materiais/estoque-baixo` | Consultar estoque abaixo do mínimo |
+| POST | `/fornecedores` | Cadastrar fornecedor |
+| GET | `/fornecedores` | Listar fornecedores |
+| GET | `/fornecedores/{id}` | Consultar fornecedor |
+| PUT | `/fornecedores/{id}` | Atualizar fornecedor |
+| POST | `/movimentacoes` | Registrar entrada ou saída |
+| GET | `/movimentacoes` | Listar movimentações |
+
+O contrato completo e os exemplos JSON estão em [`docs/contrato-da-api.md`](docs/contrato-da-api.md).
+
+## 8. Como executar localmente
+
+1. Instale JDK 25 e Docker Desktop.
+2. Abra o terminal na raiz do projeto.
+3. Execute `docker compose up -d postgres`.
+4. Execute `mvnw.cmd spring-boot:run` no Windows ou `./mvnw spring-boot:run` no Linux/macOS.
+5. Acesse `http://localhost:8080/swagger-ui.html`.
+
+A configuração local utiliza PostgreSQL na porta `5437`, banco `projeto`, usuário `projeto` e senha `projeto`. Não use essas credenciais de desenvolvimento em ambientes de produção.
+
+## 9. Tratamento de erros
+
+O tratador global `ApiExceptionHandler` padroniza erros conhecidos. Dados inválidos e regras de negócio violadas retornam `400 Bad Request`; recursos não encontrados retornam `404 Not Found`. A estrutura da resposta é definida por `ErroDTO`.
+
+## 10. Limitações e próximos passos
+
+O repositório não contém testes automatizados identificáveis nesta versão. Recomenda-se criá-los, padronizar os status HTTP dos cadastros, avaliar um endpoint de consulta de movimentação por ID e revisar o controle de concorrência para movimentações simultâneas.
+
+## 11. Integrantes
 
 | Nome | GitHub |
 |---|---|
 | Bernardo Rzatki da Silva de Souza | [@bernardorzatkidesouza-cyber](https://github.com/bernardorzatkidesouza-cyber) |
 | Miguel Machado Gomes | [@gomesisworking](https://github.com/gomesisworking) |
 | Jenifer da Silva Vieira | [@JeniferSilvaVieira](https://github.com/JeniferSilvaVieira) |
-
-## O problema
-
-**Tema sorteado:** Indústria e manufatura.
-
-Muitas indústrias enfrentam dificuldades para controlar o estoque de matéria-prima, causando falta de materiais durante a produção ou acúmulo desnecessário de produtos. A ausência de um controle adequado dificulta o acompanhamento das entradas e saídas dos materiais. Dessa forma, a API de controle de estoque permite registrar movimentações, consultar quantidades disponíveis e identificar quando os materiais estão abaixo do estoque mínimo.
-
-### Quem usa o sistema
-
-| Quem | O que faz no sistema |
-|---|---|
-| Administrador | Cadastra e atualiza matérias-primas e fornecedores. |
-| Funcionário do estoque | Registra as entradas e saídas de matérias-primas. |
-| Gerente de produção | Consulta quantidades disponíveis e verifica materiais abaixo do estoque mínimo. |
-
-### Regras de negócio
-
-| # | Regra | Onde está no código | Rota que usa |
-|---|---|---|---|
-| RN01 — Controle de saída | O sistema não permite retirar uma quantidade de matéria-prima maior do que a disponível no estoque. | `MovimentacaoService.java` | `POST /movimentacoes` |
-| RN02 — Estoque mínimo | O sistema identifica os materiais cuja quantidade disponível está abaixo do estoque mínimo definido. | `MaterialRepository.java` | `GET /materiais/estoque-baixo` |
-| RN03 — Registro de movimentações | Toda entrada ou saída registrada deve atualizar a quantidade disponível e gerar um registro da movimentação. | `MovimentacaoService.java` | `POST /movimentacoes` |
-
-### Fora do escopo
-
-O projeto está limitado aos requisitos definidos para a disciplina de Backend. Até o momento, o foco está no desenvolvimento da API REST, na persistência dos dados, nas validações, nas regras de negócio e na documentação dos endpoints.
-
-Funcionalidades como interface gráfica, autenticação e controle de permissões de usuários não fazem parte do escopo implementado nesta etapa.
-
-## Tecnologias
-
-| O quê | Qual |
-|---|---|
-| Linguagem | Java 25 |
-| Framework | Spring Boot 3.5 |
-| API REST | Spring Web |
-| Validação | Jakarta Bean Validation |
-| Persistência | Spring Data JPA |
-| Banco de dados | PostgreSQL 16 |
-| Ambiente do banco | Docker Compose |
-| Migrations | Flyway |
-| Documentação da API | Springdoc OpenAPI / Swagger UI |
-| Gerenciamento de dependências | Maven |
-| Controle de versão | Git e GitHub |
-
-## Arquitetura
-
-A API é organizada em camadas para separar as responsabilidades:
-
-- **Controller:** recebe as requisições HTTP, valida os dados de entrada e encaminha as operações.
-- **Service:** concentra as regras de negócio e coordena as operações.
-- **Repository:** acessa o banco de dados por meio do Spring Data JPA.
-- **Model:** representa as entidades persistidas no banco.
-- **DTO:** define os dados recebidos e devolvidos pela API.
-- **Mapper:** converte DTOs em entidades e entidades em DTOs.
-- **Exception Handler:** centraliza o tratamento de erros e padroniza as respostas.
-
-### Mapa da estrutura
-
-A tabela abaixo representa a estrutura verificada no código disponibilizado. Os serviços de materiais e fornecedores e os endpoints adicionais devem ser marcados como implementados após sua integração e verificação no projeto.
-
-| Entidade | Migration | Model | Repository | DTOs | Mapper | Service | Controller |
-|---|---|---|---|---|---|---|---|
-| Material | Pronta: `V1__criar_tabelas_estoque.sql` | `Material`, implementada | `MaterialRepository`, implementado | `MaterialEntradaDTO` e `MaterialRespostaDTO`, implementados | `MaterialMapper`, implementado | `MaterialService`, em desenvolvimento | `MaterialController`, implementado parcialmente |
-| Fornecedor | Pronta: `V1__criar_tabelas_estoque.sql` | `Fornecedor`, implementada | `FornecedorRepository`, implementado | `FornecedorEntradaDTO` e `FornecedorRespostaDTO`, implementados | `FornecedorMapper`, implementado | `FornecedorService`, em desenvolvimento | `FornecedorController`, implementado parcialmente |
-| Movimentação | Pronta: `V1__criar_tabelas_estoque.sql` | `Movimentacao`, implementada | `MovimentacaoRepository`, implementado | `MovimentacaoEntradaDTO` e `MovimentacaoRespostaDTO`, implementados | `MovimentacaoMapper`, criado | `MovimentacaoService`, implementado | `MovimentacaoController`, implementado parcialmente |
-
-## Entidades
-
-| Entidade | O que representa | Como se relaciona |
-|---|---|---|
-| Material | Uma matéria-prima armazenada no estoque, com quantidade disponível e estoque mínimo. | Pode aparecer em várias movimentações. |
-| Fornecedor | Empresa ou pessoa que fornece matérias-primas. | Pode estar associado a várias movimentações. |
-| Movimentação | Registro de entrada ou saída de uma matéria-prima. | Está associada a um material e pode estar associada a um fornecedor. |
-
-Os atributos, tipos, relacionamentos e o diagrama das tabelas estão documentados em [docs/modelo-de-dominio.md](docs/modelo-de-dominio.md).
-
-## Rotas
-
-As rotas abaixo refletem o código disponibilizado no projeto. A situação deve ser atualizada conforme os novos endpoints forem integrados e testados.
-
-### As que já estão implementadas no código
-
-| Verbo | Caminho | O que faz | Regra | Sucesso esperado | Erros previstos |
-|---|---|---|---|---|---|
-| `GET` | `/materiais` | Lista os materiais cadastrados. | — | `200` | — |
-| `POST` | `/materiais` | Cadastra um material. | Validação dos dados de entrada. | `200` no código atual | `400` |
-| `GET` | `/materiais/estoque-baixo` | Lista materiais abaixo do estoque mínimo. | RN02 | `200` | — |
-| `PUT` | `/materiais/{id}` | Atualiza um material existente. | O material precisa existir. | `200` | `400`, `404` |
-| `GET` | `/fornecedores` | Lista os fornecedores cadastrados. | — | `200` | — |
-| `POST` | `/fornecedores` | Cadastra um fornecedor. | Validação dos dados de entrada. | `200` no código atual | `400` |
-| `GET` | `/movimentacoes` | Lista as movimentações registradas. | — | `200` | — |
-| `POST` | `/movimentacoes` | Registra uma entrada ou saída e atualiza o estoque. | RN01 e RN03 | `200` no código atual | `400`, `404` |
-
-> Observação: os controllers atuais não definem explicitamente `201 Created` nos cadastros e no registro de movimentações. Como retornam objetos sem configurar o status HTTP, o Spring responde `200 OK`. O status poderá ser ajustado posteriormente com `@ResponseStatus(HttpStatus.CREATED)` ou `ResponseEntity`.
-
-### Rotas planejadas
-
-| Verbo | Caminho | O que fará |
-|---|---|---|
-| `GET` | `/materiais/{id}` | Consulta um material específico pelo ID. |
-| `GET` | `/fornecedores/{id}` | Consulta um fornecedor específico pelo ID. |
-| `PUT` | `/fornecedores/{id}` | Atualiza os dados de um fornecedor existente. |
-| `DELETE` | `/materiais/{id}` | Exclui um material, respeitando as regras de integridade do histórico. |
-| `DELETE` | `/fornecedores/{id}` | Exclui um fornecedor, respeitando as regras de integridade do histórico. |
-| `GET` | `/movimentacoes?materialId={id}` | Filtra movimentações por material. |
-| `GET` | `/movimentacoes?dataInicio={data}&dataFim={data}` | Filtra movimentações por período. |
-
-As rotas planejadas só devem ser marcadas como funcionais após serem implementadas, integradas e testadas.
-
-### Exemplo de requisição
-
-Cadastrar um material:
-
-```http
-POST /materiais
-Content-Type: application/json
-
-{
-  "nome": "Aço carbono",
-  "quantidade": 100.00,
-  "estoqueMinimo": 20.00
-}
-```
-
-Exemplo de resposta com status `200 OK`, conforme o controller atual:
-
-```json
-{
-  "id": 1,
-  "nome": "Aço carbono",
-  "quantidade": 100.00,
-  "estoqueMinimo": 20.00
-}
-```
-
-Registrar uma saída de matéria-prima:
-
-```http
-POST /movimentacoes
-Content-Type: application/json
-
-{
-  "materialId": 1,
-  "fornecedorId": null,
-  "tipo": "saida",
-  "quantidade": 10.00
-}
-```
-
-O sistema verifica se há estoque suficiente, registra a movimentação e atualiza a quantidade disponível.
-
-### Erros
-
-Os erros são padronizados pelo `ApiExceptionHandler` e devolvidos no formato `ErroDTO`.
-
-Exemplo de resposta `404 Not Found`:
-
-```json
-{
-  "status": 404,
-  "erro": "Not Found",
-  "mensagem": "Material não encontrado: 999",
-  "caminho": "/materiais/999",
-  "timestamp": "2026-10-25T12:30:00",
-  "campos": []
-}
-```
-
-O horário é ilustrativo.
-
-Um campo inválido gera uma resposta `400 Bad Request`, com os detalhes na lista `campos`.
-
-| Status | Quando acontece |
-|---|---|
-| `

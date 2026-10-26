@@ -1,16 +1,3 @@
-# controller: a porta de entrada da API (Aula 07)
+# Controllers
 
-É aqui que a requisição HTTP chega. O Controller recebe o pedido, repassa para o Service e devolve a resposta.
-
-**Nesta etapa:** crie um Controller para cada entidade. Precisam ter rotas o da API simples (`POST`, `GET` e `GET /{id}`) e os que as regras de negócio usam. Os outros ficam montados: a classe criada, com o comentário no topo dizendo quais rotas vai atender.
-
-| Faz | Não faz |
-|---|---|
-| Liga verbo e caminho a um método (`@GetMapping`, `@PostMapping`...) | Regra de negócio |
-| Dispara a validação do DTO de entrada (`@Valid`) | Acessar o Repository |
-| Escolhe o status HTTP (`200`, `201`, `204`) | Importar qualquer classe de `api.model` |
-| Descreve a rota para o Swagger (`@Tag`, `@Operation`) | Montar resposta de erro: isso é do `ApiExceptionHandler` |
-
-**Já vem pronto:** `ApiExceptionHandler`, que transforma os erros em `400` e `404` no formato único.
-
-**Para consultar:** `TarefaController` em `Aula 09/exemplo_tarefas_resolvido`.
+Os controllers expõem os endpoints HTTP da API. `MaterialController` trata `/materiais`, `FornecedorController` trata `/fornecedores` e `MovimentacaoController` trata `/movimentacoes`. `ApiExceptionHandler` converte exceções conhecidas em respostas de erro padronizadas.
