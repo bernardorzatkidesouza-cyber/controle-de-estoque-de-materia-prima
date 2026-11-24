@@ -100,3 +100,25 @@ O Flyway executa a migration `V1__criar_tabelas_estoque.sql`, que cria `forneced
 | Bernardo Rzatki da Silva de Souza | [@bernardorzatkidesouza-cyber](https://github.com/bernardorzatkidesouza-cyber) |
 | Miguel Machado Gomes | [@gomesisworking](https://github.com/gomesisworking) |
 | Jenifer da Silva Vieira | [@JeniferSilvaVieira](https://github.com/JeniferSilvaVieira) |
+
+### C1 — 🔗 Elo Externo
+**Origem:** Aula 12: Integração de Serviços
+
+> "Como sistema, quero consumir um serviço externo de verdade, para agregar valor sem reconstruir o que já existe pronto."
+
+**Requisito:** consumir uma API pública real via `RestClient` (o cliente usado na Aula 12), `RestTemplate` ou `WebClient`.
+
+- Pelo menos uma rota consome dados de uma API externa real (clima, câmbio, geocodificação, etc.)
+- Falha do serviço externo é tratada (timeout, erro, fallback) sem derrubar a aplicação
+- Dado externo é combinado com dado próprio na resposta — não é um simples repasse
+
+### Conversão para dolar com API pública de cotação de moedas (câmbio).
+
+1. Como vamos atender ao requisito
+   Imagine que sua indústria tenha uma matéria-prima cadastrada com preço de US$ 10,00.
+
+Quando consultar essa matéria-prima, sua API:
+1. Busca os dados da matéria-prima no seu próprio banco PostgreSQL.
+2. Consulta uma API externa para obter a cotação atual do dólar.
+3. Calcula o preço convertido de dólar para real.
+4. Retorna os dados próprios junto com a cotação externa.
