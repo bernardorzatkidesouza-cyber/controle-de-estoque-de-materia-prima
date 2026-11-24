@@ -1,8 +1,10 @@
 
 package com.industria.estoque.controller;
 
+import com.industria.estoque.dto.MaterialCotacaoDTO;
 import com.industria.estoque.dto.MaterialEntradaDTO;
 import com.industria.estoque.dto.MaterialRespostaDTO;
+import com.industria.estoque.service.CotacaoService;
 import com.industria.estoque.service.MaterialService;
 
 import jakarta.validation.Valid;
@@ -14,10 +16,23 @@ import java.util.List;
 @RequestMapping("/materiais")
 public class MaterialController {
 
+    private final CotacaoService cotacaoService;
+
     private final MaterialService service;
 
-    public MaterialController(MaterialService service) {
+    public MaterialController(
+            MaterialService service,
+            CotacaoService cotacaoService) {
+
         this.service = service;
+        this.cotacaoService = cotacaoService;
+    }
+
+    @GetMapping("/{id}/cotacao")
+    public MaterialCotacaoDTO consultarCotacao(
+            @PathVariable Long id) {
+
+        return cotacaoService.consultar(id);
     }
 
     @PostMapping

@@ -24,6 +24,12 @@ public record MaterialEntradaDTO(
         value = "0.00",
         message = "O estoque mínimo não pode ser negativo."
     )
-    BigDecimal estoqueMinimo
+    BigDecimal estoqueMinimo,
+    @NotNull(message = "O preço unitário em dólar é obrigatório.")
+    @DecimalMin(
+            value = "0.00",
+            message = "O preço não pode ser negativo."
+    )
+            BigDecimal precoUnitarioDolar
 
-) {}
+){}

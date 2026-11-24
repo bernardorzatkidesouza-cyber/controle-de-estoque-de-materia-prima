@@ -29,6 +29,10 @@ public record MovimentacaoEntradaDTO(
         value = "0.01",
         message = "A quantidade deve ser maior que zero."
     )
-    BigDecimal quantidade
+    BigDecimal quantidade,
+    @NotNull(message = "O preço unitário em dólar é obrigatório.")
+    @DecimalMin(value = "0.00",
+            message = "O preço não pode ser negativo.")
+    BigDecimal precoUnitarioDolar
 
 ) {}

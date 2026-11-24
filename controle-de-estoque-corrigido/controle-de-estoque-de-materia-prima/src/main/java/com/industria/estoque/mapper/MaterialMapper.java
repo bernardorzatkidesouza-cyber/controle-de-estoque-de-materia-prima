@@ -21,6 +21,7 @@ public class MaterialMapper {
         material.setNome(dto.nome());
         material.setQuantidade(dto.quantidade());
         material.setEstoqueMinimo(dto.estoqueMinimo());
+        material.setPrecoUnitarioDolar(dto.precoUnitarioDolar());
 
         return material;
     }
@@ -35,7 +36,8 @@ public class MaterialMapper {
                 material.getId(),
                 material.getNome(),
                 material.getQuantidade(),
-                material.getEstoqueMinimo()
+                material.getEstoqueMinimo(),
+                material.getPrecoUnitarioDolar()
         );
     }
 
@@ -56,5 +58,6 @@ public class MaterialMapper {
         material.setNome(dto.nome());
         material.setQuantidade(dto.quantidade());
         material.setEstoqueMinimo(dto.estoqueMinimo());
+        material.setPrecoUnitarioDolar(dto.precoUnitarioDolar());
     }
 }

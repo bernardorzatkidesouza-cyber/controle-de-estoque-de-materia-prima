@@ -20,6 +20,12 @@ public class Material {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal estoqueMinimo = BigDecimal.ZERO;
 
+    @Column(name = "preco_unitario_dolar",
+            nullable = false,
+            precision = 10,
+            scale = 2)
+    private BigDecimal precoUnitarioDolar = BigDecimal.ZERO;
+
     public Material() {
     }
 
@@ -49,5 +55,13 @@ public class Material {
 
     public void setEstoqueMinimo(BigDecimal estoqueMinimo) {
         this.estoqueMinimo = estoqueMinimo;
+    }
+
+    public BigDecimal getPrecoUnitarioDolar() {
+        return precoUnitarioDolar;
+    }
+
+    public void setPrecoUnitarioDolar(BigDecimal precoUnitarioDolar) {
+        this.precoUnitarioDolar = precoUnitarioDolar;
     }
 }

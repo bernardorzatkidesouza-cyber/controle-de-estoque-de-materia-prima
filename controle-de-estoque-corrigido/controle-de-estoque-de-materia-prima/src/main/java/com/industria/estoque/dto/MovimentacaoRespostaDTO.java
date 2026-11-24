@@ -12,6 +12,7 @@ public record MovimentacaoRespostaDTO(
         String fornecedorNome,
         String tipo,
         BigDecimal quantidade,
-        LocalDateTime data
+        LocalDateTime data,
+        BigDecimal precoUnitarioDolar
 ) {
 }
